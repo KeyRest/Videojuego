@@ -2,6 +2,7 @@ package Controllers;
 
 import Models.Enemy;
 import Models.Player;
+import Models.Projectile;
 import Views.GameFrame;
 import Views.GamePanel;
 import java.awt.Graphics2D;
@@ -18,7 +19,6 @@ import javax.swing.JOptionPane;
  */
 public class GameController extends Thread implements KeyListener {
 
-    private final int tileSize = 96;
     private GamePanel gamePanel;
     private GameFrame gameFrame;
     private Player player;
@@ -66,7 +66,7 @@ public class GameController extends Thread implements KeyListener {
         player.update();
         checkCollision();
         this.enemies.forEach((n) -> n.seguirPersonaje(player));
-
+        updateProjectiles();
     }
 
     @Override
@@ -139,12 +139,29 @@ public class GameController extends Thread implements KeyListener {
         this.enemies.forEach((n) -> n.draw(g2));
     }
 
+    public void projectiles(Graphics2D g2) {
+
+        player.getProjectiles().forEach((n) -> n.draw(g2));
+    }
+
+    public void updateProjectiles() {
+        for (int i = player.getProjectiles().size() - 1; i >= 0; i--) {
+            Projectile projectile = player.getProjectiles().get(i);
+            projectile.update();
+
+            // Verificar si el proyectil está fuera de los límites del juego
+            if (projectile.getX() < 0 || projectile.getX() > 768 || projectile.getY() < 0 || projectile.getY() > 576) {
+                player.getProjectiles().remove(i);  // Eliminar el proyectil de la lista
+            }
+        }
+    }
+
     public void checkCollision() {
         Rectangle playerHitBox = player.getHitBox();
 
         for (int i = 0; i < enemies.size(); i++) {
             Enemy enemy = enemies.get(i);
-            Rectangle enemyHitBox = enemy.getHitBox();
+            Rectangle enemyHitBox = enemy.getHitBox(enemy.getX(), enemy.getY(), enemy.getWidth(), enemy.getHeight());
 
             // Verifica la colisión entre el jugador y el enemigo
             if (playerHitBox.intersects(enemyHitBox)) {
@@ -155,7 +172,7 @@ public class GameController extends Thread implements KeyListener {
 
             for (int j = i + 1; j < enemies.size(); j++) {
                 Enemy enemy2 = enemies.get(j);
-                Rectangle otherEnemyHitBox = enemy2.getHitBox();
+                Rectangle otherEnemyHitBox = enemy2.getHitBox(enemy2.getX(), enemy2.getY(), enemy2.getWidth(), enemy2.getHeight());
 
                 // Verifica la colisión entre dos enemigos
                 if (enemyHitBox.intersects(otherEnemyHitBox)) {
@@ -163,16 +180,9 @@ public class GameController extends Thread implements KeyListener {
                     double dy = enemy.getY() - enemy2.getY();
                     double distance = Math.sqrt(dx * dx + dy * dy);
 
-                    // Calcula la superposición y la cantidad de movimiento requerida
-                    double overlap = (enemy.getRadius() + enemy2.getRadius()) - distance;
-                    double moveAmount = overlap / 2.0;
-
-                    // Mueve los enemigos en direcciones opuestas
-                    enemy.setX((int) (enemy.getX() + moveAmount * dx / distance));
-                    enemy.setY((int) (enemy.getY() + moveAmount * dy / distance));
-                    enemy2.setX((int) (enemy2.getX() - moveAmount * dx / distance));
-                    enemy2.setY((int) (enemy2.getY() - moveAmount * dy / distance));
+                    // Verificar si la colisión es horizontal o vertical
                 }
+
             }
         }
     }

@@ -43,6 +43,7 @@ public class GamePanel extends javax.swing.JPanel {
         Graphics2D g2 = (Graphics2D) g;
 
         player.draw(g2);
+        gameController.projectiles(g2);
         gameController.enemyGeneration(g2);
 
         g2.dispose();

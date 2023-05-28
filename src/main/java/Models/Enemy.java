@@ -6,8 +6,8 @@
 package Models;
 
 import java.awt.Graphics2D;
+import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
-import java.io.IOException;
 import javax.imageio.ImageIO;
 
 public class Enemy extends Entity {
@@ -24,6 +24,7 @@ public class Enemy extends Entity {
         direction = "right";
         width = 50;
         height = 50;
+        hitbox = new Rectangle(x, y, width, height);
     }
 
     public void getImage(int i) {
@@ -60,7 +61,7 @@ public class Enemy extends Entity {
                 image = rightImage;
         }
 
-        g2.drawImage(image, x, y, 96, 96, null);
+        g2.drawImage(image, x, y, 64, 64, null);
 
     }
 
@@ -108,26 +109,46 @@ public class Enemy extends Entity {
         int playerX = player.getX();
         int playerY = player.getY();
 
-        if (x < playerX) {
+        if (x < playerX && y < playerY) {
+            direction = "right";
+            x++;
+            y++;
+        } else if (x > playerX && y < playerY) {
+            direction = "left";
+            x--;
+            y++;
+        } else if (x < playerX && y > playerY) {
+            direction = "right";
+            x++;
+            y--;
+        } else if (x > playerX && y > playerY) {
+            direction = "left";
+            x--;
+            y--;
+        } else if (x < playerX) {
             direction = "right";
             x++;
         } else if (x > playerX) {
             direction = "left";
             x--;
-        }
-
-        if (y < playerY) {
-
+        } else if (y < playerY) {
+            direction = "down";
             y++;
         } else if (y > playerY) {
+            direction = "up";
             y--;
         }
+
     }
 
     public int getRadius() {
 
         int radius = Math.max(width / 2, height / 2);
         return radius;
+    }
+
+    public Rectangle getHitbox() {
+        return hitbox;
     }
 
 }

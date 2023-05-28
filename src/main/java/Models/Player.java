@@ -5,19 +5,21 @@
  */
 package Models;
 
-import Views.GamePanel;
-import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.ArrayList;
 import javax.imageio.ImageIO;
 
 public class Player extends Entity {
 
+    private ArrayList<Projectile> projectiles;
+
     private boolean upON, downON, rightON, leftON;
 
     public Player() {
+        this.projectiles = new ArrayList<>(0);
     }
 
     public void setDefault() {
@@ -25,14 +27,18 @@ public class Player extends Entity {
         y = 252;
         speed = 4;
         direction = "right";
-        width = 36;
-        height = 36;
+        width = 50;
+        height = 50;
+        hitbox = new Rectangle(x, y, width, height);
+
     }
 
     public void update() {
         if (upON) {
+            direction = "up";
             y -= speed;
         } else if (downON) {
+            direction = "down";
             y += speed;
         } else if (leftON) {
             direction = "left";
@@ -41,6 +47,9 @@ public class Player extends Entity {
             direction = "right";
             x += speed;
         }
+
+        shootProjectile();
+
     }
 
     public void getImage() {
@@ -66,8 +75,15 @@ public class Player extends Entity {
                 image = rightImage;
         }
 
-        g2.drawImage(image, x, y, 96, 96, null);
+        g2.drawImage(image, x, y, 64, 64, null);
 
+    }
+
+    public void shootProjectile() {
+
+        // Crea un nuevo proyectil y añádelo a la lista de proyectiles
+        Projectile projectile = new Projectile(x, y, this);
+        projectiles.add(projectile);
     }
 
     public boolean isUpON() {
@@ -110,11 +126,18 @@ public class Player extends Entity {
         return y;
     }
 
-    @Override
+    public String getDirection() {
+        return direction;
+    }
+
     public Rectangle getHitBox() {
 
-        return super.getHitBox();
+        return super.getHitBox(x, y, width, height);
 
+    }
+
+    public ArrayList<Projectile> getProjectiles() {
+        return projectiles;
     }
 
 }
