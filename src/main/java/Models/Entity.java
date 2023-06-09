@@ -15,10 +15,9 @@ public class Entity {
     protected int speed;
     protected BufferedImage leftImage, rightImage;
     protected String direction;
-    protected Rectangle hitbox;
 
     public Rectangle getHitBox(int x, int y, int width, int height) {
-        return this.hitbox;
+        return new Rectangle(x, y, width, height);
     }
 
 }

@@ -12,19 +12,18 @@ import javax.imageio.ImageIO;
 
 public class Enemy extends Entity {
 
-    public Enemy(int id) {
+    public Enemy(int id, int x, int y) {
         getImage(id);
+        this.x = x;
+        this.y = y;
         setDefault();
     }
 
     public void setDefault() {
-        x = 100;
-        y = 100;
         speed = 12;
         direction = "right";
         width = 50;
         height = 50;
-        hitbox = new Rectangle(x, y, width, height);
     }
 
     public void getImage(int i) {
@@ -148,7 +147,7 @@ public class Enemy extends Entity {
     }
 
     public Rectangle getHitbox() {
-        return hitbox;
+        return super.getHitBox(x, y, width, height);
     }
 
 }

@@ -23,7 +23,6 @@ public class GameController extends Thread implements KeyListener {
     private GameFrame gameFrame;
     private Player player;
     private ArrayList<Enemy> enemies;
-
     private int playerSpeed = 8;
 
     public GameController(GamePanel gamePanel) {
@@ -31,6 +30,7 @@ public class GameController extends Thread implements KeyListener {
         this.player = this.gamePanel.getPlayer();
         this.player.setDefault();
         this.player.getImage();
+        this.player.shootProjectile();
         this.enemies = new ArrayList<>(0);
     }
 
@@ -64,9 +64,10 @@ public class GameController extends Thread implements KeyListener {
 
     public void update() {
         player.update();
-        checkCollision();
         this.enemies.forEach((n) -> n.seguirPersonaje(player));
+        checkCollision();
         updateProjectiles();
+
     }
 
     @Override
@@ -120,14 +121,12 @@ public class GameController extends Thread implements KeyListener {
     public void generateEnemy() {
 
         int enemyId = (int) (Math.random() * 2 + 1);
-        Enemy enemy = new Enemy(enemyId);
         int x = (int) (Math.random() * 768 + 1);
         int y = (int) (Math.random() * 576 + 1);
         if (isPositionValid(x, y)) {
-            enemy.setX(x);
-            enemy.setY(y);
+            Enemy enemy = new Enemy(enemyId, x, y);
+            this.enemies.add(enemy);
         }
-        this.enemies.add(enemy);
 
     }
 
@@ -145,26 +144,35 @@ public class GameController extends Thread implements KeyListener {
     }
 
     public void updateProjectiles() {
+
+        if (player.getProjectiles().size() < 1) {
+            player.shootProjectile();
+        }
+
         for (int i = player.getProjectiles().size() - 1; i >= 0; i--) {
             Projectile projectile = player.getProjectiles().get(i);
             projectile.update();
 
             // Verificar si el proyectil está fuera de los límites del juego
             if (projectile.getX() < 0 || projectile.getX() > 768 || projectile.getY() < 0 || projectile.getY() > 576) {
-                player.getProjectiles().remove(i);  // Eliminar el proyectil de la lista
+                player.getProjectiles().remove(i);
             }
         }
     }
 
     public void checkCollision() {
-        Rectangle playerHitBox = player.getHitBox();
 
         for (int i = 0; i < enemies.size(); i++) {
+            Rectangle playerHitBox = player.getHitBox();
+            System.out.println(playerHitBox);
+
             Enemy enemy = enemies.get(i);
             Rectangle enemyHitBox = enemy.getHitBox(enemy.getX(), enemy.getY(), enemy.getWidth(), enemy.getHeight());
+            System.out.println(enemyHitBox);
 
             // Verifica la colisión entre el jugador y el enemigo
             if (playerHitBox.intersects(enemyHitBox)) {
+                System.out.println("aaaaa");
                 JOptionPane.showMessageDialog(gamePanel, "Usted perdio");
                 this.stop();
                 continue;
@@ -181,6 +189,29 @@ public class GameController extends Thread implements KeyListener {
                     double distance = Math.sqrt(dx * dx + dy * dy);
 
                     // Verificar si la colisión es horizontal o vertical
+                    if (Math.abs(dx) > Math.abs(dy)) {
+                        // Colisión horizontal
+                        if (dx > 0) {
+                            // Mover enemy hacia la izquierda y enemy2 hacia la derecha
+                            enemy.setX(enemy.getX() - 12);
+                            enemy2.setX(enemy2.getX() + 12);
+                        } else {
+                            // Mover enemy hacia la derecha y enemy2 hacia la izquierda
+                            enemy.setX(enemy.getX() + 12);
+                            enemy2.setX(enemy2.getX() - 12);
+                        }
+                    } else {
+                        // Colisión vertical
+                        if (dy > 0) {
+                            // Mover enemy hacia arriba y enemy2 hacia abajo
+                            enemy.setY(enemy.getY() - 12);
+                            enemy2.setY(enemy2.getY() + 12);
+                        } else {
+                            // Mover enemy hacia abajo y enemy2 hacia arriba
+                            enemy.setY(enemy.getY() + 12);
+                            enemy2.setY(enemy2.getY() - 12);
+                        }
+                    }
                 }
 
             }

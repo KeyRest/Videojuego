@@ -1,8 +1,14 @@
+Models\Player.class
+Models\Enemy.class
+Models\Projectile.class
+Views\PrincipalFrame$1.class
+Models\Collider.class
+Views\PrincipalFrame.class
 Controllers\VIdeojuego_Proyecto.class
+Models\Entity.class
 Controllers\GameController.class
 Controllers\PrincipalController.class
-Views\PrincipalFrame$1.class
 Views\GamePanel.class
 Views\GameFrame.class
 Views\GameFrame$1.class
-Views\PrincipalFrame.class
+.netbeans_automatic_build

@@ -19,6 +19,8 @@ public class Projectile {
     private int speed = 12;
     private int width = 5;  // Ancho del proyectil
     private int height = 5;  // Alto del proyectil
+    private boolean active;
+    private String direction;
     private Rectangle hitbox;  // Hitbox del proyectil
     private Player player;
     private BufferedImage projectilImage;
@@ -29,9 +31,11 @@ public class Projectile {
         this.y = y;
         this.width = width;
         this.height = height;
+        this.active = true;
         hitbox = new Rectangle(x, y, width, height);
         this.player = player;
         getImage();
+        getDirection();
     }
 
     public void getImage() {
@@ -46,26 +50,41 @@ public class Projectile {
     // Método para actualizar la posición y afectar la hitbox del proyectil
     public void update() {
 
+        if (direction.equals("up")) {
+            y -= speed;
+        } else if (direction.equals("down")) {
+            y += speed;
+        } else if (direction.equals("left")) {
+            x -= speed;
+        } else if (direction.equals("right")) {
+            x += speed;
+        }
+
+        hitbox.setLocation(x, y);
+
+    }
+
+    public void getDirection() {
         switch (player.getDirection()) {
             case "up":
-                y -= speed;
+                direction = "up";
+
                 break;
             case "down":
-                y += speed;
+                direction = "down";
+
                 break;
             case "left":
-                x -= speed;
+                direction = "left";
+
                 break;
             case "right":
-                x += speed;
+                direction = "right";
+
                 break;
             default:
                 throw new AssertionError();
         }
-        hitbox.setLocation(x, y);      
-        
-        
-
     }
     // Método para dibujar el proyectil en un objeto Graphics2D
 
@@ -99,4 +118,13 @@ public class Projectile {
     public Rectangle getHitbox() {
         return hitbox;
     }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
+    }
+
 }

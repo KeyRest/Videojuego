@@ -29,8 +29,6 @@ public class Player extends Entity {
         direction = "right";
         width = 50;
         height = 50;
-        hitbox = new Rectangle(x, y, width, height);
-
     }
 
     public void update() {
@@ -47,8 +45,6 @@ public class Player extends Entity {
             direction = "right";
             x += speed;
         }
-
-        shootProjectile();
 
     }
 
@@ -81,8 +77,7 @@ public class Player extends Entity {
 
     public void shootProjectile() {
 
-        // Crea un nuevo proyectil y añádelo a la lista de proyectiles
-        Projectile projectile = new Projectile(x, y, this);
+        Projectile projectile = new Projectile(x + 12, y + 12, this);
         projectiles.add(projectile);
     }
 
